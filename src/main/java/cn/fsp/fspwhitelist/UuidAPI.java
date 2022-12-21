@@ -27,10 +27,10 @@ public class UuidAPI {
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()
                     .create();
-            System.out.println(response.body());
+//            System.out.println(response.body());
             bplayer = gson.fromJson(response.body(), bPlayer.class);
             aplayer.setName(bplayer.getName());
-            aplayer.setUuid(UuidUtils.fromUndashed(aplayer.getId()));
+            aplayer.setUuid(UuidUtils.fromUndashed(bplayer.getId()));
             online = true;
         }else {
             online = false;

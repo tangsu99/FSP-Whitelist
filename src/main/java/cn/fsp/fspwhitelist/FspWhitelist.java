@@ -38,25 +38,18 @@ public class FspWhitelist {
         this.server = server;
         this.logger = logger;
         whitelist = new Whitelist(logger);
-//        MinecraftAPI minecraftAPI = new MinecraftAPI(this, "tangsu99");
-//        System.out.println(minecraftAPI.getId());
-//        System.out.println(UuidUtils.fromUndashed(minecraftAPI.getId()));
-//        System.out.println(minecraftAPI.getUUID());
     }
 
     @Subscribe
-    public void onProxyInitialization(ProxyInitializeEvent event){
+    public void onProxyInitialization(ProxyInitializeEvent event) throws IOException, InterruptedException {
+        UuidAPI uuidAPI = new UuidAPI(this, "tangsu99");
+        logger.info(uuidAPI.getPlayerName());
+        logger.info(uuidAPI.getUUID().toString());
         final CmdHandler handler = new CmdHandler(this);
         LiteralCommandNode<CommandSource> rootNode = LiteralArgumentBuilder.<CommandSource>literal("fwhitelist").build();
 
         //Register commands
         CommandBuilder.register(this);
-
-
-
-
-
-
 
 //        final CmdHandler handler = new CmdHandler(this, wl);
 //        server.getCommandManager().register(server.getCommandManager().metaBuilder("fwhitelist").build(),

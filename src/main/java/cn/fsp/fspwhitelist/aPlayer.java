@@ -3,11 +3,7 @@ package cn.fsp.fspwhitelist;
 import java.util.UUID;
 
 public class aPlayer {
-
     private UUID uuid;
-
-    private String id;
-
     private String name;
 
     public String getName(){
@@ -21,12 +17,6 @@ public class aPlayer {
     }
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
-    }
-    public String getId(){
-        return this.id;
-    }
-    public void setId(String id) {
-        this.id = id;
     }
 
     public boolean playerInside(String player){
