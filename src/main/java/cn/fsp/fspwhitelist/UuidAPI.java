@@ -15,9 +15,7 @@ public class UuidAPI {
     private aPlayer aplayer = new aPlayer();
     private bPlayer bplayer;
     private Boolean online;
-    private FspWhitelist fspWhitelist;
-    public UuidAPI(FspWhitelist fspWhitelist, String playerName) throws IOException, InterruptedException {
-        this.fspWhitelist = fspWhitelist;
+    public UuidAPI(String playerName) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + playerName))

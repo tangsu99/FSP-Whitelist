@@ -25,16 +25,6 @@ public class Whitelist {
         ps = gson.fromJson(loadFile(), aPlayer[].class);
     }
 
-//    public static void main(String[] args) throws IOException, InterruptedException {
-//        Whitelist whitelist = new Whitelist();
-//        MinecraftAPI minecraftAPI = new MinecraftAPI("tangsu99");
-//        whitelist.add("tangsu", minecraftAPI.getUUID());
-//        for (aPlayer p : whitelist.ps) {
-//            System.out.println(p.getName());
-//            System.out.println(p.getUuid());
-//        }
-//    }
-
     public String listWhitelist() {
         String str = "";
         for (aPlayer p : ps) {
@@ -65,6 +55,9 @@ public class Whitelist {
         int len = ps.length;
         ps = Arrays.copyOf(ps, len + 1);
         ps[len] = newp;
+    }
+    public void remove(String playerName) {
+        // todo 实现删除方法
     }
 
     private String loadFile() throws IOException {

@@ -1,8 +1,10 @@
 package cn.fsp.fspwhitelist;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -23,54 +25,34 @@ import java.io.IOException;
 )
 public class FspWhitelist {
     @Inject
-    private ProxyServer server;
-
-    public ProxyServer getServer(){
-        return this.server;
-    }
-
+    public ProxyServer server;
     @Inject
-    private Logger logger;
+    public CommandManager commandManager;
+    @Inject
+    public Injector injector;
+    @Inject
+    public Logger logger;
     public Whitelist whitelist;
 
     @Inject
-    public FspWhitelist(ProxyServer server, Logger logger) throws IOException, InterruptedException {
+    public FspWhitelist(ProxyServer server, Logger logger) throws IOException {
         this.server = server;
         this.logger = logger;
         whitelist = new Whitelist(logger);
     }
 
     @Subscribe
-    public void onProxyInitialization(ProxyInitializeEvent event) throws IOException, InterruptedException {
-        UuidAPI uuidAPI = new UuidAPI(this, "tangsu99");
-        logger.info(uuidAPI.getPlayerName());
-        logger.info(uuidAPI.getUUID().toString());
-        final CmdHandler handler = new CmdHandler(this);
-        LiteralCommandNode<CommandSource> rootNode = LiteralArgumentBuilder.<CommandSource>literal("fwhitelist").build();
-
-        //Register commands
-        CommandBuilder.register(this);
-
-//        final CmdHandler handler = new CmdHandler(this, wl);
-//        server.getCommandManager().register(server.getCommandManager().metaBuilder("fwhitelist").build(),
-//                new BrigadierCommand(LiteralArgumentBuilder
-//                        .<CommandSource>literal("fwhitelist")
-//                        .requires(source -> source.hasPermission("fwhitelist.cmds"))
-//                        .executes(handler::help)
-//                        .then(LiteralArgumentBuilder.<CommandSource>literal("list")
-//                                .requires(source -> source.hasPermission("fwhitelist.cmds.list"))
-//                                .executes(handler::list)
-//                        ).build()
-//                )
-//        );
+    public void onProxyInitialization(ProxyInitializeEvent event){
+        // todo 整理一遍代码
+        commandManager.register(injector.getInstance(CommandBuilder.class).register(this));
     }
 
     @Subscribe
     public void onLoginEvent(LoginEvent event) {
-        if (!whitelist.playerInsideWhitelist(event.getPlayer().getUsername().toString())) {
+        if (!whitelist.playerInsideWhitelist(event.getPlayer().getUsername())) {
             event.getPlayer().disconnect(Component.text("You are not whitelisted!"));
         }else {
-            logger.info("+++" + event.getPlayer().getUsername());
+            logger.info("+++> " + event.getPlayer().getUsername());
         }
     }
 }
