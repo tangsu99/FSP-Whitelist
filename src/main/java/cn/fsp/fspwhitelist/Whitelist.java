@@ -61,6 +61,7 @@ public class Whitelist {
         int len = ps.length;
         ps = Arrays.copyOf(ps, len + 1);
         ps[len] = player;
+        saveFile();
     }
 
     public void remove(UUID uuid) {
@@ -69,19 +70,13 @@ public class Whitelist {
         aPlayer[] temp = new aPlayer[ps.length - 1];
         for (aPlayer p : ps) {
             if (p.playerInside(uuid)) {
-                logger.info("个数: " + ps.length);
-                debug();
-                logger.info("=================================");
-                index = i;
+                index = 1;
             }
-            if (i != index) {
-            }else {
-                temp[i] = ps[i + 1];
+            if (i < temp.length) {
+                temp[i] = ps[i + index];
             }
             i++;
         }
-        logger.info("个数: " + ps.length);
-        debug();
         ps = temp;
         saveFile();
     }
