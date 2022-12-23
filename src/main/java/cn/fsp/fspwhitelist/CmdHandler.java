@@ -6,8 +6,6 @@ import lombok.SneakyThrows;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-import java.io.IOException;
-
 public class CmdHandler {
     private Whitelist wl;
 
@@ -27,20 +25,28 @@ public class CmdHandler {
 
     public int list(CommandContext<CommandSource> commandSourceCommandContext) {
         CommandSource source = commandSourceCommandContext.getSource();
+        source.sendMessage(Component.text("白名单中共有" + wl.getLength() + "位玩家"));
         source.sendMessage(Component.text(wl.listWhitelist()));
         return 1;
     }
 
     public int on(CommandContext<CommandSource> commandSourceCommandContext) {
         CommandSource source = commandSourceCommandContext.getSource();
+        source.sendMessage(Component.text("TODO"));
         return 1;
     }
 
     public int off(CommandContext<CommandSource> commandSourceCommandContext) {
         CommandSource source = commandSourceCommandContext.getSource();
+        source.sendMessage(Component.text("TODO"));
         return 1;
     }
 
+    public int reload(CommandContext<CommandSource> commandSourceCommandContext) {
+        CommandSource source = commandSourceCommandContext.getSource();
+        source.sendMessage(Component.text("TODO"));
+        return 1;
+    }
     @SneakyThrows
     public int add(CommandContext<CommandSource> commandSourceCommandContext){
         String name = commandSourceCommandContext.getArgument("playername", String.class);
@@ -56,7 +62,7 @@ public class CmdHandler {
         }
         wl.add(player);
         source.sendMessage(Component.text("Whitelist added " + name + ".").color(NamedTextColor.GREEN));
-        source.sendMessage(Component.text(wl.listWhitelist()));
+//        source.sendMessage(Component.text(wl.listWhitelist()));
         return 1;
     }
     public int remove(CommandContext<CommandSource> commandSourceCommandContext){

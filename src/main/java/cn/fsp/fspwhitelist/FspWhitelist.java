@@ -2,10 +2,7 @@ package cn.fsp.fspwhitelist;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.velocitypowered.api.command.CommandManager;
-import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
@@ -13,8 +10,6 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import org.slf4j.Logger;
-
-import java.io.IOException;
 
 @Plugin(
         id = "fsp-whitelist",
@@ -34,17 +29,11 @@ public class FspWhitelist {
     public Logger logger;
     public Whitelist whitelist;
 
-    @Inject
-    public FspWhitelist(ProxyServer server, Logger logger) throws IOException {
-        this.server = server;
-        this.logger = logger;
-        whitelist = new Whitelist(logger);
-    }
-
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event){
         // todo 整理一遍代码
-        commandManager.register(injector.getInstance(CommandBuilder.class).register(this));
+        whitelist = new Whitelist(logger);
+        commandManager.register(injector.getInstance(CmdBuilder.class).register(this));
     }
 
     @Subscribe
@@ -53,8 +42,8 @@ public class FspWhitelist {
         player.main(event.getPlayer().getUsername());
         if (!whitelist.playerInsideWhitelist(player)) {
             event.getPlayer().disconnect(Component.text("You are not whitelisted!"));
-        } else {
-            logger.info("+++> " + event.getPlayer().getUsername());
+            return;
         }
+        logger.info("+> " + event.getPlayer().getUsername());
     }
 }

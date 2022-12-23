@@ -13,7 +13,6 @@ import java.util.UUID;
 
 public class UuidAPI {
     private aPlayer aplayer = new aPlayer();
-    private bPlayer bplayer;
     private Boolean online;
     public UuidAPI(String playerName){
         HttpClient client = HttpClient.newHttpClient();
@@ -32,8 +31,7 @@ public class UuidAPI {
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()
                     .create();
-//            System.out.println(response.body());
-            bplayer = gson.fromJson(response.body(), bPlayer.class);
+            bPlayer bplayer = gson.fromJson(response.body(), bPlayer.class);
             aplayer.setName(bplayer.getName());
             aplayer.setUuid(UuidUtils.fromUndashed(bplayer.getId()));
             online = true;
@@ -48,9 +46,6 @@ public class UuidAPI {
 
     public aPlayer getAplayer() {
         return aplayer;
-    }
-    public String getPlayerName() {
-        return aplayer.getName();
     }
 
     public boolean isOnline(){

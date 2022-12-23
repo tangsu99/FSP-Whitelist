@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 
 public class Whitelist {
     private aPlayer[] ps;
-
     @Inject
     private Logger logger;
 
@@ -32,13 +31,6 @@ public class Whitelist {
             str = str.concat(p.getName() + ", ");
         }
         return str;
-    }
-
-    public void debug() {
-        for (aPlayer p : ps) {
-            logger.info(p.getName());
-            logger.info(p.getUuid().toString());
-        }
     }
 
     public boolean playerInsideWhitelist(aPlayer player) {
@@ -80,7 +72,9 @@ public class Whitelist {
         ps = temp;
         saveFile();
     }
-
+    public int getLength(){
+        return ps.length;
+    }
     private String loadFile() {
         try {
             return Files.readString(Paths.get("C:/Users/18763/Desktop/whitelist.json"))
