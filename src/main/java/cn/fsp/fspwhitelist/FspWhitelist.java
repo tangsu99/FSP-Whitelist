@@ -11,6 +11,10 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 @Plugin(
         id = "fsp-whitelist",
         name = "Fsp Whitelist",
@@ -28,10 +32,21 @@ public class FspWhitelist {
     @Inject
     public Logger logger;
     public Whitelist whitelist;
-
+    private String file = "whitelist.json";
+    private String path = "./plugins/fsp-whitelist/";
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event){
-        // todo 整理一遍代码
+        if (!server.getConfiguration().isOnlineMode()){
+            logger.info("onlineMode=false");
+            return;
+        }
+//        if (!Files.exists(Paths.get(path + file))){
+//            try {
+//                Files.createDirectory(Paths.get(path));
+//            } catch (IOException e) {
+////                throw new RuntimeException(e);
+//            }
+//        }
         whitelist = new Whitelist(logger);
         commandManager.register(injector.getInstance(CmdBuilder.class).register(this));
     }
@@ -41,7 +56,7 @@ public class FspWhitelist {
         aPlayer player = new aPlayer();
         player.main(event.getPlayer().getUsername());
         if (!whitelist.playerInsideWhitelist(player)) {
-            event.getPlayer().disconnect(Component.text("You are not whitelisted!"));
+            event.getPlayer().disconnect(Component.text("你不在白名单中!"));
             return;
         }
         logger.info("+> " + event.getPlayer().getUsername());

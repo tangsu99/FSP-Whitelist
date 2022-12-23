@@ -16,12 +16,22 @@ public class Whitelist {
     private aPlayer[] ps;
     @Inject
     private Logger logger;
+    private String file = "whitelist.json";
+    private String path = "./plugins/fsp-whitelist/";
 
     public Whitelist(Logger logger) {
         this.logger = logger;
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
+        try {
+            Files.createDirectory(Paths.get(path));
+        } catch (IOException e) {
+        }
+        try {
+            Files.createFile(Paths.get(path + file));
+        } catch (IOException e) {
+        }
         ps = gson.fromJson(loadFile(), aPlayer[].class);
     }
 
@@ -76,21 +86,28 @@ public class Whitelist {
         return ps.length;
     }
     private String loadFile() {
+        String whiteListFile;
         try {
-            return Files.readString(Paths.get("C:/Users/18763/Desktop/whitelist.json"))
-                    .replaceAll("\r|\n| ", "")
-                    .replaceAll("\"", "\"")
-                    .replaceAll(",", ", ");
+            whiteListFile = Files.readString(Paths.get(path + file));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        if (whiteListFile.equals("")){
+            try {
+                Files.write(Paths.get(path + file), "[]".getBytes(StandardCharsets.UTF_8));
+                whiteListFile = loadFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return whiteListFile;
     }
     private void saveFile() {
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
         try {
-            Files.write(Paths.get("C:/Users/18763/Desktop/whitelist.json"), gson.toJson(ps).getBytes(StandardCharsets.UTF_8));
+            Files.write(Paths.get(path + file), gson.toJson(ps).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
