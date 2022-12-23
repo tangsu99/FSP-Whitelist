@@ -43,15 +43,17 @@ public class FspWhitelist {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event){
-        // todo ÕûÀíÒ»±é´úÂë
+        // todo æ•´ç†ä¸€éä»£ç 
         commandManager.register(injector.getInstance(CommandBuilder.class).register(this));
     }
 
     @Subscribe
     public void onLoginEvent(LoginEvent event) {
-        if (!whitelist.playerInsideWhitelist(event.getPlayer().getUsername())) {
+        aPlayer player = new aPlayer();
+        player.main(event.getPlayer().getUsername());
+        if (!whitelist.playerInsideWhitelist(player)) {
             event.getPlayer().disconnect(Component.text("You are not whitelisted!"));
-        }else {
+        } else {
             logger.info("+++> " + event.getPlayer().getUsername());
         }
     }

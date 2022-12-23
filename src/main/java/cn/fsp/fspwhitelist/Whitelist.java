@@ -1,6 +1,7 @@
 package cn.fsp.fspwhitelist;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -17,7 +18,7 @@ public class Whitelist {
     @Inject
     private Logger logger;
 
-    public Whitelist(Logger logger) throws IOException {
+    public Whitelist(Logger logger) {
         this.logger = logger;
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
@@ -36,9 +37,18 @@ public class Whitelist {
     public void debug() {
         for (aPlayer p : ps) {
             logger.info(p.getName());
+            logger.info(p.getUuid().toString());
         }
     }
 
+    public boolean playerInsideWhitelist(aPlayer player) {
+        for (aPlayer p : ps) {
+            if (p.playerInside(player.getUuid())) {
+                return true;
+            }
+        }
+        return false;
+    }
     public boolean playerInsideWhitelist(String player) {
         for (aPlayer p : ps) {
             if (p.playerInside(player)) {
@@ -47,23 +57,53 @@ public class Whitelist {
         }
         return false;
     }
-
-    public void add(String playerName, UUID uuid) {
-        aPlayer newp = new aPlayer();
-        newp.setName(playerName);
-        newp.setUuid(uuid);
+    public void add(aPlayer player) {
         int len = ps.length;
         ps = Arrays.copyOf(ps, len + 1);
-        ps[len] = newp;
-    }
-    public void remove(String playerName) {
-        // todo 实现删除方法
+        ps[len] = player;
     }
 
-    private String loadFile() throws IOException {
-        return Files.readString(Paths.get("C:/Users/18763/Desktop/whitelist.json"))
-                .replaceAll("\r|\n| ", "")
-                .replaceAll("\"", "\"")
-                .replaceAll(",", ", ");
+    public void remove(UUID uuid) {
+        int i = 0;
+        int index = 0;
+        aPlayer[] temp = new aPlayer[ps.length - 1];
+        for (aPlayer p : ps) {
+            if (p.playerInside(uuid)) {
+                logger.info("涓暟: " + ps.length);
+                debug();
+                logger.info("=================================");
+                index = i;
+            }
+            if (i != index) {
+            }else {
+                temp[i] = ps[i + 1];
+            }
+            i++;
+        }
+        logger.info("涓暟: " + ps.length);
+        debug();
+        ps = temp;
+        saveFile();
+    }
+
+    private String loadFile() {
+        try {
+            return Files.readString(Paths.get("C:/Users/18763/Desktop/whitelist.json"))
+                    .replaceAll("\r|\n| ", "")
+                    .replaceAll("\"", "\"")
+                    .replaceAll(",", ", ");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void saveFile() {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
+        try {
+            Files.write(Paths.get("C:/Users/18763/Desktop/whitelist.json"), gson.toJson(ps).getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

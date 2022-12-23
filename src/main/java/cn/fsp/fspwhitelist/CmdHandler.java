@@ -6,9 +6,10 @@ import lombok.SneakyThrows;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
+import java.io.IOException;
+
 public class CmdHandler {
     private Whitelist wl;
-    private UuidAPI uuidAPI;
 
     public CmdHandler(FspWhitelist fspWhitelist) {
         this.wl = fspWhitelist.whitelist;
@@ -42,30 +43,33 @@ public class CmdHandler {
     public int add(CommandContext<CommandSource> commandSourceCommandContext){
         String name = commandSourceCommandContext.getArgument("playername", String.class);
         CommandSource source = commandSourceCommandContext.getSource();
-        UuidAPI uuidAPI1 = new UuidAPI(name);
-        if(uuidAPI1.isOnline()){
-            wl.add(name, uuidAPI1.getUUID());
-            source.sendMessage(Component.text("Whitelist added " + name + ".").color(NamedTextColor.GREEN));
-            source.sendMessage(Component.text(wl.listWhitelist()));
-        }else {
+        aPlayer player = new aPlayer();
+        if(!player.main(name)){     // 不是正版玩家
             source.sendMessage(Component.text("Add failed " + name).color(NamedTextColor.RED));
-            source.sendMessage(Component.text(wl.listWhitelist()));
+            return 1;
         }
+        if (!wl.playerInsideWhitelist(player)){       // 已经在白名单
+            source.sendMessage(Component.text(name + "in the whitelist.").color(NamedTextColor.GREEN));
+            return 1;
+        }
+        wl.add(player);
+        source.sendMessage(Component.text("Whitelist added " + name + ".").color(NamedTextColor.GREEN));
+        source.sendMessage(Component.text(wl.listWhitelist()));
         return 1;
     }
     @SneakyThrows
     public int remove(CommandContext<CommandSource> commandSourceCommandContext){
         String name = commandSourceCommandContext.getArgument("playername", String.class);
         CommandSource source = commandSourceCommandContext.getSource();
-        UuidAPI uuidAPI1 = new UuidAPI(name);
-        if(wl.playerInsideWhitelist(name)){
-            source.sendMessage(Component.text("Whitelist removeed " + name + ". UUID: " + uuidAPI1.getUUID().toString()).color(NamedTextColor.RED));
-            wl.remove(name);
-            source.sendMessage(Component.text(wl.listWhitelist()));
-        }else {
-            source.sendMessage(Component.text(name + "Not on the whitelist.").color(NamedTextColor.RED));
-            source.sendMessage(Component.text(wl.listWhitelist()));
+        UuidAPI uuidAPI = new UuidAPI(name);
+        if(!uuidAPI.isOnline()){
+            source.sendMessage(Component.text(name + "not in whitelist.").color(NamedTextColor.RED));
         }
+        if (!wl.playerInsideWhitelist(uuidAPI.getAplayer())){
+            source.sendMessage(Component.text(name + "not in whitelist.").color(NamedTextColor.RED));
+            return 1;
+        }
+        wl.remove(uuidAPI.getUUID());
         return 1;
     }
 }

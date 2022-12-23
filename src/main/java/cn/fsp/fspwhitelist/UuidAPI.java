@@ -15,12 +15,19 @@ public class UuidAPI {
     private aPlayer aplayer = new aPlayer();
     private bPlayer bplayer;
     private Boolean online;
-    public UuidAPI(String playerName) throws IOException, InterruptedException {
+    public UuidAPI(String playerName){
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + playerName))
                 .build();
-        HttpResponse<String> response = client.send(request,HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = null;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         if(response.statusCode() == 200){
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()

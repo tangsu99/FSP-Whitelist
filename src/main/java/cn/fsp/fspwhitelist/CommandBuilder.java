@@ -8,6 +8,8 @@ import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.ProxyServer;
 
+import java.io.IOException;
+
 public class CommandBuilder {
     private static ProxyServer server;
 
