@@ -3,6 +3,7 @@ package cn.fsp.fspwhitelist;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.UUID;
@@ -16,17 +17,17 @@ public class Whitelist {
     private aPlayer[] ps;
     @Inject
     private Logger logger;
-    private String file = "whitelist.json";
-    private String path = "./plugins/fsp-whitelist/";
+    private Path path = Paths.get("./plugins/fsp-whitelist/");
+    private Path filePath = Paths.get("./plugins/fsp-whitelist/config.json");
 
     public Whitelist(Logger logger) {
         this.logger = logger;
         try {
-            Files.createDirectory(Paths.get(path));
+            Files.createDirectory(path);
         } catch (IOException e) {
         }
         try {
-            Files.createFile(Paths.get(path + file));
+            Files.createFile(filePath);
         } catch (IOException e) {
         }
         loadFile();
@@ -83,19 +84,22 @@ public class Whitelist {
     public int getLength(){
         return ps.length;
     }
+    public void reLoadWhitelist(){
+        loadFile();
+    }
     private void loadFile() {
         String whiteListFile;
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
         try {
-            whiteListFile = Files.readString(Paths.get(path + file));
+            whiteListFile = Files.readString(filePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         if (whiteListFile.equals("")){
             try {
-                Files.write(Paths.get(path + file), "[]".getBytes(StandardCharsets.UTF_8));
+                Files.write(filePath, "[]".getBytes(StandardCharsets.UTF_8));
                 whiteListFile = "[]";
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -108,7 +112,7 @@ public class Whitelist {
                 .setPrettyPrinting()
                 .create();
         try {
-            Files.write(Paths.get(path + file), gson.toJson(ps).getBytes(StandardCharsets.UTF_8));
+            Files.write(filePath, gson.toJson(ps).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

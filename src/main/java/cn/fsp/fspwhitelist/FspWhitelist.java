@@ -28,26 +28,29 @@ public class FspWhitelist {
     @Inject
     public Logger logger;
     public Whitelist whitelist;
-    public boolean on = true;
+
+    public Config config;
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event){
+        config = new Config();
         if (!server.getConfiguration().isOnlineMode()){
             logger.error("onlineMode=false");
-            on = false;
+            config.reviseEnable(false);
             return;
         }
+
         whitelist = new Whitelist(logger);
         commandManager.register(injector.getInstance(CmdBuilder.class).register(this));
     }
     @Subscribe
     public void onLoginEvent(LoginEvent event) {
-        if (!on){
+        if (!config.getEnable()){
             return;
         }
         aPlayer player = new aPlayer();
         player.main(event.getPlayer().getUsername());
         if (!whitelist.playerInsideWhitelist(player)) {
-            event.getPlayer().disconnect(Component.text("你不在白名单中!"));
+            event.getPlayer().disconnect(Component.text(config.getKickMsg()));
             return;
         }
         logger.info("+> " + event.getPlayer().getUsername());

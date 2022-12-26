@@ -7,10 +7,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
 public class CmdHandler {
-    private Whitelist wl;
+    private Whitelist whitelist;
+    private Config config;
 
     public CmdHandler(FspWhitelist fspWhitelist) {
-        this.wl = fspWhitelist.whitelist;
+        this.whitelist = fspWhitelist.whitelist;
+        this.config = fspWhitelist.config;
     }
 
     public int help(CommandContext<CommandSource> commandSourceCommandContext) {
@@ -26,26 +28,30 @@ public class CmdHandler {
 
     public int list(CommandContext<CommandSource> commandSourceCommandContext) {
         CommandSource source = commandSourceCommandContext.getSource();
-        source.sendMessage(Component.text("白名单中共有" + wl.getLength() + "位玩家"));
-        source.sendMessage(Component.text(wl.listWhitelist()));
+        source.sendMessage(Component.text("白名单中共有" + whitelist.getLength() + "位玩家"));
+        source.sendMessage(Component.text(whitelist.listWhitelist()));
         return 1;
     }
 
     public int on(CommandContext<CommandSource> commandSourceCommandContext) {
         CommandSource source = commandSourceCommandContext.getSource();
-        source.sendMessage(Component.text("TODO"));
+        config.reviseEnable(true);
+        source.sendMessage(Component.text("白名单已开启"));
         return 1;
     }
 
     public int off(CommandContext<CommandSource> commandSourceCommandContext) {
         CommandSource source = commandSourceCommandContext.getSource();
-        source.sendMessage(Component.text("TODO"));
+        config.reviseEnable(false);
+        source.sendMessage(Component.text("白名单已关闭"));
         return 1;
     }
 
     public int reload(CommandContext<CommandSource> commandSourceCommandContext) {
         CommandSource source = commandSourceCommandContext.getSource();
-        source.sendMessage(Component.text("TODO"));
+        whitelist.reLoadWhitelist();
+        config.reLoadConfig();
+        source.sendMessage(Component.text("插件已重载"));
         return 1;
     }
     @SneakyThrows
@@ -57,11 +63,11 @@ public class CmdHandler {
             source.sendMessage(Component.text(name + "可能不是正版玩家").color(NamedTextColor.RED));
             return 1;
         }
-        if (wl.playerInsideWhitelist(player)){       // 已经在白名单
+        if (whitelist.playerInsideWhitelist(player)){       // 已经在白名单
             source.sendMessage(Component.text(name + " 已在白名单").color(NamedTextColor.GREEN));
             return 1;
         }
-        wl.add(player);
+        whitelist.add(player);
         source.sendMessage(Component.text("已将 " + name + "添加至白名单").color(NamedTextColor.GREEN));
         return 1;
     }
@@ -73,11 +79,11 @@ public class CmdHandler {
             source.sendMessage(Component.text(name + "可能不是正版玩家").color(NamedTextColor.RED));
             return 1;
         }
-        if (!wl.playerInsideWhitelist(uuidAPI.getAplayer())){       // 不在白名单
+        if (!whitelist.playerInsideWhitelist(uuidAPI.getAplayer())){       // 不在白名单
             source.sendMessage(Component.text("白名单不存在此玩家").color(NamedTextColor.RED));
             return 1;
         }
-        wl.remove(uuidAPI.getUUID());
+        whitelist.remove(uuidAPI.getUUID());
         source.sendMessage(Component.text("已删除 " + name + "的白名单").color(NamedTextColor.RED));
         return 1;
     }
