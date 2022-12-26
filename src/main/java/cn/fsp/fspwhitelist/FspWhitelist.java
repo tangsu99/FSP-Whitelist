@@ -32,14 +32,26 @@ public class FspWhitelist {
     public Config config;
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event){
+        logger.info("FSP-whitelist v" + BuildConstants.VERSION);
+        logger.info("by tangsu99");
+        logger.info("https://github.com/tangsu99/FSP-Whitelist");
         config = new Config();
+        logger.info("Load config done.");
         if (!server.getConfiguration().isOnlineMode()){
-            logger.error("onlineMode=false");
+            logger.error("velocity 为离线模式");
             config.reviseEnable(false);
+            logger.error("插件加载失败");
             return;
         }
         whitelist = new Whitelist(logger);
+        logger.info("Load whitelist done.");
         commandManager.register(injector.getInstance(CmdBuilder.class).register(this));
+        logger.info("插件加载成功");
+        if (config.getEnable()){
+            logger.info("白名单已启用");
+            return;
+        }
+        logger.info("白名单已禁用");
     }
     @Subscribe
     public void onLoginEvent(LoginEvent event) {

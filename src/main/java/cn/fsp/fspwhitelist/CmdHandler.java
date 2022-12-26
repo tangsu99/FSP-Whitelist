@@ -6,13 +6,17 @@ import lombok.SneakyThrows;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
+import org.slf4j.Logger;
+
 public class CmdHandler {
     private Whitelist whitelist;
     private Config config;
+    private Logger logger;
 
     public CmdHandler(FspWhitelist fspWhitelist) {
         this.whitelist = fspWhitelist.whitelist;
         this.config = fspWhitelist.config;
+        this.logger = fspWhitelist.logger;
     }
 
     public int help(CommandContext<CommandSource> commandSourceCommandContext) {
@@ -36,14 +40,14 @@ public class CmdHandler {
     public int on(CommandContext<CommandSource> commandSourceCommandContext) {
         CommandSource source = commandSourceCommandContext.getSource();
         config.reviseEnable(true);
-        source.sendMessage(Component.text("白名单已开启"));
+        source.sendMessage(Component.text("白名单已启用"));
         return 1;
     }
 
     public int off(CommandContext<CommandSource> commandSourceCommandContext) {
         CommandSource source = commandSourceCommandContext.getSource();
         config.reviseEnable(false);
-        source.sendMessage(Component.text("白名单已关闭"));
+        source.sendMessage(Component.text("白名单已禁用"));
         return 1;
     }
 
