@@ -18,7 +18,7 @@ public class Whitelist {
     @Inject
     private Logger logger;
     private Path path = Paths.get("./plugins/fsp-whitelist/");
-    private Path filePath = Paths.get("./plugins/fsp-whitelist/config.json");
+    private Path filePath = Paths.get("./plugins/fsp-whitelist/whitelist.json");
 
     public Whitelist(Logger logger) {
         this.logger = logger;

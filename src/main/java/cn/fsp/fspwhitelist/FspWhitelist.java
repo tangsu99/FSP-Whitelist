@@ -38,7 +38,6 @@ public class FspWhitelist {
             config.reviseEnable(false);
             return;
         }
-
         whitelist = new Whitelist(logger);
         commandManager.register(injector.getInstance(CmdBuilder.class).register(this));
     }
