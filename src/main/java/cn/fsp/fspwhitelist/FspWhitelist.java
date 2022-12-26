@@ -15,7 +15,7 @@ import org.slf4j.Logger;
         id = "fsp-whitelist",
         name = "Fsp Whitelist",
         version = BuildConstants.VERSION,
-        url = "http://tangsu99.cn",
+        url = "https://github.com/tangsu99/FSP-Whitelist",
         authors = {"tangsu99"}
 )
 public class FspWhitelist {
@@ -28,27 +28,22 @@ public class FspWhitelist {
     @Inject
     public Logger logger;
     public Whitelist whitelist;
-    private String file = "whitelist.json";
-    private String path = "./plugins/fsp-whitelist/";
+    public boolean on = true;
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event){
         if (!server.getConfiguration().isOnlineMode()){
-            logger.info("onlineMode=false");
+            logger.error("onlineMode=false");
+            on = false;
             return;
         }
-//        if (!Files.exists(Paths.get(path + file))){
-//            try {
-//                Files.createDirectory(Paths.get(path));
-//            } catch (IOException e) {
-////                throw new RuntimeException(e);
-//            }
-//        }
         whitelist = new Whitelist(logger);
         commandManager.register(injector.getInstance(CmdBuilder.class).register(this));
     }
-
     @Subscribe
     public void onLoginEvent(LoginEvent event) {
+        if (!on){
+            return;
+        }
         aPlayer player = new aPlayer();
         player.main(event.getPlayer().getUsername());
         if (!whitelist.playerInsideWhitelist(player)) {

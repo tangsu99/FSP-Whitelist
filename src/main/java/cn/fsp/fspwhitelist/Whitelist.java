@@ -21,9 +21,6 @@ public class Whitelist {
 
     public Whitelist(Logger logger) {
         this.logger = logger;
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
         try {
             Files.createDirectory(Paths.get(path));
         } catch (IOException e) {
@@ -32,30 +29,31 @@ public class Whitelist {
             Files.createFile(Paths.get(path + file));
         } catch (IOException e) {
         }
-        ps = gson.fromJson(loadFile(), aPlayer[].class);
+        loadFile();
     }
 
     public String listWhitelist() {
         String str = "";
+        int i = 0;
         for (aPlayer p : ps) {
-            str = str.concat(p.getName() + ", ");
+            str = str.concat(p.getName());
+            if (i < ps.length){
+                str = str.concat(", ");
+            }
+            i++;
         }
         return str;
     }
 
     public boolean playerInsideWhitelist(aPlayer player) {
         for (aPlayer p : ps) {
-            if (p.playerInside(player.getUuid())) {
-                return true;
-            }
+            if (p.playerInside(player.getUuid())) return true;
         }
         return false;
     }
     public boolean playerInsideWhitelist(String player) {
         for (aPlayer p : ps) {
-            if (p.playerInside(player)) {
-                return true;
-            }
+            if (p.playerInside(player)) return true;
         }
         return false;
     }
@@ -85,8 +83,11 @@ public class Whitelist {
     public int getLength(){
         return ps.length;
     }
-    private String loadFile() {
+    private void loadFile() {
         String whiteListFile;
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
         try {
             whiteListFile = Files.readString(Paths.get(path + file));
         } catch (IOException e) {
@@ -95,12 +96,12 @@ public class Whitelist {
         if (whiteListFile.equals("")){
             try {
                 Files.write(Paths.get(path + file), "[]".getBytes(StandardCharsets.UTF_8));
-                whiteListFile = loadFile();
+                whiteListFile = "[]";
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        return whiteListFile;
+        ps = gson.fromJson(whiteListFile, aPlayer[].class);
     }
     private void saveFile() {
         Gson gson = new GsonBuilder()
