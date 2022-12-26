@@ -5,8 +5,8 @@
 
 * 指令
 ```
-/fwhitelist on/off          开关白名单 # 未实现
-/fwhitelist reload          重载白名单 # 未实现
+/fwhitelist on/off          开关白名单
+/fwhitelist reload          重载白名单
 /fwhitelist list            展示白名单
 /fwhitelist add <name>      添加玩家到白名单
 /fwhitelist remove <name>   在白名单中删除玩家
