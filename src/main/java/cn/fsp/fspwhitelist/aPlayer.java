@@ -29,9 +29,10 @@ public class aPlayer {
     public boolean playerInside(UUID uuid) {
         return this.uuid.equals(uuid);
     }
+
     public boolean main(String name) {
         UuidAPI uuidAPI = new UuidAPI(name);
-        if(!uuidAPI.isOnline()){
+        if (!uuidAPI.isOnline()) {
             return false;
         }
         this.uuid = uuidAPI.getUUID();

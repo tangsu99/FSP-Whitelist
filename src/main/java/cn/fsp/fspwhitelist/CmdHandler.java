@@ -58,7 +58,7 @@ public class CmdHandler {
         source.sendMessage(Component.text("插件已重载"));
         return 1;
     }
-    @SneakyThrows
+//    @SneakyThrows
     public int add(CommandContext<CommandSource> commandSourceCommandContext){
         String name = commandSourceCommandContext.getArgument("playername", String.class);
         CommandSource source = commandSourceCommandContext.getSource();

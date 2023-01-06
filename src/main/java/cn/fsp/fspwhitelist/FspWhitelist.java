@@ -3,6 +3,7 @@ package cn.fsp.fspwhitelist;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
@@ -55,6 +56,7 @@ public class FspWhitelist {
     }
     @Subscribe
     public void onLoginEvent(LoginEvent event) {
+        logger.info("+> " + event.getPlayer().getUsername());
         if (!config.getEnable()){
             return;
         }
@@ -62,8 +64,11 @@ public class FspWhitelist {
         player.main(event.getPlayer().getUsername());
         if (!whitelist.playerInsideWhitelist(player)) {
             event.getPlayer().disconnect(Component.text(config.getKickMsg()));
-            return;
         }
-        logger.info("+> " + event.getPlayer().getUsername());
+    }
+
+    @Subscribe
+    public void onDisconnectEvent(DisconnectEvent event) {
+        logger.info("-> " + event.getPlayer().getUsername());
     }
 }
