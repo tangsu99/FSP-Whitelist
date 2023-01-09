@@ -1,5 +1,7 @@
 package cn.fsp.fspwhitelist;
 
+import com.velocitypowered.api.util.UuidUtils;
+
 import java.util.UUID;
 
 public class aPlayer {
@@ -10,16 +12,8 @@ public class aPlayer {
         return this.name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public UUID getUuid() {
         return this.uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
     }
 
     public boolean playerInside(String player) {
@@ -38,5 +32,10 @@ public class aPlayer {
         this.uuid = uuidAPI.getUUID();
         this.name = name;
         return true;
+    }
+
+    public void main(bPlayer pl) {
+        this.uuid = UuidUtils.fromUndashed(pl.getId());
+        this.name = pl.getName();
     }
 }

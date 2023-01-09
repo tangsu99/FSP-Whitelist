@@ -81,6 +81,17 @@ public class Whitelist {
         ps = temp;
         saveFile();
     }
+
+    public String[] getWhiteListPLAYERNAME() {
+        String[] ALL = new String[ps.length];
+        int i = 0;
+        for (aPlayer p : ps) {
+            ALL[i] = p.getName();
+            i++;
+        }
+        return ALL;
+    }
+
     public int getLength(){
         return ps.length;
     }
@@ -90,7 +101,6 @@ public class Whitelist {
     private void loadFile() {
         String whiteListFile;
         Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
                 .create();
         try {
             whiteListFile = Files.readString(filePath);

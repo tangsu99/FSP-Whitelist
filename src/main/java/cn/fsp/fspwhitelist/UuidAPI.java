@@ -2,7 +2,6 @@ package cn.fsp.fspwhitelist;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.velocitypowered.api.util.UuidUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,12 +13,12 @@ import java.util.UUID;
 public class UuidAPI {
     private aPlayer aplayer = new aPlayer();
     private Boolean online;
-    public UuidAPI(String playerName){
+    public UuidAPI(String playerName) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + playerName))
                 .build();
-        HttpResponse<String> response = null;
+        HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
@@ -27,20 +26,18 @@ public class UuidAPI {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        if(response.statusCode() == 200){
+        if (response.statusCode() == 200) {
             Gson gson = new GsonBuilder()
-                    .setPrettyPrinting()
                     .create();
             bPlayer bplayer = gson.fromJson(response.body(), bPlayer.class);
-            aplayer.setName(bplayer.getName());
-            aplayer.setUuid(UuidUtils.fromUndashed(bplayer.getId()));
+            aplayer.main(bplayer);
             online = true;
-        }else {
+        } else {
             online = false;
         }
     }
 
-    public UUID getUUID(){
+    public UUID getUUID() {
         return aplayer.getUuid();
     }
 
@@ -48,7 +45,7 @@ public class UuidAPI {
         return aplayer;
     }
 
-    public boolean isOnline(){
+    public boolean isOnline() {
         return online;
     }
 }
