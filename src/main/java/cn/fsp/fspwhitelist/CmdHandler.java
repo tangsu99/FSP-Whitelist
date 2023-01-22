@@ -58,16 +58,20 @@ public class CmdHandler {
         source.sendMessage(Component.text("插件已重载"));
         return 1;
     }
-//    @SneakyThrows
+
     public int add(CommandContext<CommandSource> commandSourceCommandContext){
         String name = commandSourceCommandContext.getArgument("playername", String.class);
         CommandSource source = commandSourceCommandContext.getSource();
         aPlayer player = new aPlayer();
-        if(!player.main(name)){     // 不是正版玩家
+        // 不是正版玩家
+        if(!player.main(name)){
             source.sendMessage(Component.text(name + "可能不是正版玩家").color(NamedTextColor.RED));
+            whitelist.add(player);
+            source.sendMessage(Component.text("已将 " + name + "添加至白名单").color(NamedTextColor.GREEN));
             return 1;
         }
-        if (whitelist.playerInsideWhitelist(player)){       // 已经在白名单
+        // 已经在白名单
+        if (whitelist.playerInsideWhitelist(player)){
             source.sendMessage(Component.text(name + " 已在白名单").color(NamedTextColor.GREEN));
             return 1;
         }
@@ -79,11 +83,13 @@ public class CmdHandler {
         String name = commandSourceCommandContext.getArgument("playername", String.class);
         CommandSource source = commandSourceCommandContext.getSource();
         UuidAPI uuidAPI = new UuidAPI(name);
-        if(!uuidAPI.isOnline()){        // 不是正版玩家
+        // 不是正版玩家
+        if(!uuidAPI.isOnline()){
             source.sendMessage(Component.text(name + "可能不是正版玩家").color(NamedTextColor.RED));
             return 1;
         }
-        if (!whitelist.playerInsideWhitelist(uuidAPI.getAplayer())){       // 不在白名单
+        // 不在白名单
+        if (!whitelist.playerInsideWhitelist(uuidAPI.getAplayer())){
             source.sendMessage(Component.text("白名单不存在此玩家").color(NamedTextColor.RED));
             return 1;
         }

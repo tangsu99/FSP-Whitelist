@@ -38,4 +38,9 @@ public class aPlayer {
         this.uuid = UuidUtils.fromUndashed(pl.getId());
         this.name = pl.getName();
     }
+
+    public void main(String name, UUID uuid) {
+        this.uuid = uuid;
+        this.name = name;
+    }
 }

@@ -58,7 +58,24 @@ public class Whitelist {
         }
         return false;
     }
+
+    public boolean playerInsideWhitelist(UUID uuid) {
+        for (aPlayer p : ps) {
+            if (p.playerInside(uuid)) return true;
+        }
+        return false;
+    }
+
     public void add(aPlayer player) {
+        int len = ps.length;
+        ps = Arrays.copyOf(ps, len + 1);
+        ps[len] = player;
+        saveFile();
+    }
+
+    public void add(String playerName) {
+        aPlayer player = new aPlayer();
+        player.main(playerName, UuidAPI.getOfflineUUID(playerName));
         int len = ps.length;
         ps = Arrays.copyOf(ps, len + 1);
         ps[len] = player;

@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class UuidAPI {
@@ -47,5 +48,9 @@ public class UuidAPI {
 
     public boolean isOnline() {
         return online;
+    }
+
+    public static UUID getOfflineUUID(String playerName) {
+        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8));
     }
 }
