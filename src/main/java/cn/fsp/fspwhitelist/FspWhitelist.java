@@ -11,12 +11,9 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
-import com.velocitypowered.api.util.GameProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.slf4j.Logger;
-
-import java.util.HashMap;
 
 @Plugin(
         id = "fsp-whitelist",
@@ -36,8 +33,6 @@ public class FspWhitelist {
     public Logger logger;
     public Whitelist whitelist;
     public UserCache userCache;
-    public HashMap<String, UserCacheFile> cache;
-
     public Config config;
 
     @Subscribe
@@ -58,10 +53,9 @@ public class FspWhitelist {
         }else {
             logger.info("velocity 为离线模式");
         }
-        userCache = new UserCache();
-        cache = userCache.getUserCacheFileHashMap();
         whitelist = new Whitelist(logger);
         logger.info("Load whitelist done.");
+        userCache = whitelist.getUserCache();
         commandManager.register(injector.getInstance(CmdBuilder.class).register(this));
         logger.info("插件加载成功");
         if (config.getEnable()) {
@@ -78,9 +72,9 @@ public class FspWhitelist {
             return;
         }
         // 判断有无玩家的数据缓存
-        if (cache.containsKey(event.getUsername())) {
+        if (userCache.playerInsideWhitelist(event.getUsername())) {
             // 不在白名单
-            if (!whitelist.playerInsideWhitelist(cache.get(event.getUsername()).getUuid())) {
+            if (!whitelist.playerInsideWhitelist(userCache.getPlayerCache(event.getUsername()).getUuid())) {
                 logger.info("非白名单玩家 " + event.getUsername() + " 尝试加入");
                 event.setResult(PreLoginEvent.PreLoginComponentResult.denied(Component.text(config.getKickMsg()).color(NamedTextColor.RED)));
             }
@@ -90,10 +84,11 @@ public class FspWhitelist {
     @Subscribe
     public void onGameProfileRequestEvent(GameProfileRequestEvent event) {
         logger.info("GameProfileRequestEvent +> " + event.getUsername());
-        if (!cache.containsKey(event.getUsername())) {
-            // 写入玩家缓存
-            userCache.add(event.getGameProfile().getName(), event.getGameProfile().getId());
+        if (userCache.playerInsideWhitelist(event.getUsername())) {
+            return;
         }
+        // 写入玩家缓存
+        userCache.add(event.getGameProfile().getName(), event.getGameProfile().getId());
     }
 
     @Subscribe
@@ -103,7 +98,7 @@ public class FspWhitelist {
             return;
         }
         // 不在白名单
-        if (!whitelist.playerInsideWhitelist(cache.get(event.getPlayer().getUsername()).getUuid())) {
+        if (!whitelist.playerInsideWhitelist(userCache.getPlayerCache(event.getPlayer().getUsername()).getUuid())) {
             logger.info("非白名单玩家 " + event.getPlayer().getUsername() + " 尝试加入");
             event.getPlayer().disconnect(Component.text(config.getKickMsg()).color(NamedTextColor.RED));
         }

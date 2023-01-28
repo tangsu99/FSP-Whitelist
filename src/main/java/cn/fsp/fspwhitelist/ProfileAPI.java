@@ -11,10 +11,8 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-public class UuidAPI {
-    private aPlayer aplayer = new aPlayer();
-    private Boolean online;
-    public UuidAPI(String playerName) {
+public class ProfileAPI {
+    public static Profile getProfile(String playerName) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://api.mojang.com/users/profiles/minecraft/" + playerName))
@@ -30,27 +28,15 @@ public class UuidAPI {
         if (response.statusCode() == 200) {
             Gson gson = new GsonBuilder()
                     .create();
-            bPlayer bplayer = gson.fromJson(response.body(), bPlayer.class);
-            aplayer.main(bplayer);
-            online = true;
-        } else {
-            online = false;
+            Profile profile = new Profile(gson.fromJson(response.body(), bPlayer.class), true);
+            return profile;
         }
+        Profile profile = new Profile(playerName, UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8)), false);
+        return profile;
     }
 
-    public UUID getUUID() {
-        return aplayer.getUuid();
-    }
-
-    public aPlayer getAplayer() {
-        return aplayer;
-    }
-
-    public boolean isOnline() {
-        return online;
-    }
-
-    public static UUID getOfflineUUID(String playerName) {
-        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8));
+    public static Profile getOfflineProfile(String playerName) {
+        Profile profile = new Profile(playerName, UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8)), false);
+        return profile;
     }
 }

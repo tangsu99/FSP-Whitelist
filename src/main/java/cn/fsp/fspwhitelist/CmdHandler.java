@@ -2,7 +2,6 @@ package cn.fsp.fspwhitelist;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.velocitypowered.api.command.CommandSource;
-import lombok.SneakyThrows;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -62,38 +61,39 @@ public class CmdHandler {
     public int add(CommandContext<CommandSource> commandSourceCommandContext){
         String name = commandSourceCommandContext.getArgument("playername", String.class);
         CommandSource source = commandSourceCommandContext.getSource();
-        aPlayer player = new aPlayer();
+        Profile profile = ProfileAPI.getProfile(name);
         // 不是正版玩家
-        if(!player.main(name)){
+        if(!profile.isOnline()){
             source.sendMessage(Component.text(name + "可能不是正版玩家").color(NamedTextColor.RED));
-            whitelist.add(player);
+            whitelist.add(profile);
             source.sendMessage(Component.text("已将 " + name + "添加至白名单").color(NamedTextColor.GREEN));
             return 1;
         }
         // 已经在白名单
-        if (whitelist.playerInsideWhitelist(player)){
+        if (whitelist.playerInsideWhitelist(profile.getUuid())){
             source.sendMessage(Component.text(name + " 已在白名单").color(NamedTextColor.GREEN));
             return 1;
         }
-        whitelist.add(player);
+        whitelist.add(profile);
         source.sendMessage(Component.text("已将 " + name + "添加至白名单").color(NamedTextColor.GREEN));
         return 1;
     }
     public int remove(CommandContext<CommandSource> commandSourceCommandContext){
         String name = commandSourceCommandContext.getArgument("playername", String.class);
         CommandSource source = commandSourceCommandContext.getSource();
-        UuidAPI uuidAPI = new UuidAPI(name);
+        Profile profile = ProfileAPI.getProfile(name);
         // 不是正版玩家
-        if(!uuidAPI.isOnline()){
+        if(!profile.isOnline()){
             source.sendMessage(Component.text(name + "可能不是正版玩家").color(NamedTextColor.RED));
+            whitelist.remove(profile);
             return 1;
         }
         // 不在白名单
-        if (!whitelist.playerInsideWhitelist(uuidAPI.getAplayer())){
+        if (!whitelist.playerInsideWhitelist(profile.getUuid())){
             source.sendMessage(Component.text("白名单不存在此玩家").color(NamedTextColor.RED));
             return 1;
         }
-        whitelist.remove(uuidAPI.getUUID());
+        whitelist.remove(profile);
         source.sendMessage(Component.text("已删除 " + name + "的白名单").color(NamedTextColor.RED));
         return 1;
     }

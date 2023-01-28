@@ -34,9 +34,15 @@ public class UserCache {
         }
         loadFile();
     }
+    public aPlayer getPlayerCache(String name) {
+        return new aPlayer(name, this.userCacheFileHashMap.get(name).getUuid());
+    }
 
-    public HashMap<String, UserCacheFile> getUserCacheFileHashMap() {
-        return userCacheFileHashMap;
+    public boolean playerInsideWhitelist(String player) {
+        if (this.userCacheFileHashMap.containsKey(player)) {
+            return true;
+        }
+        return false;
     }
 
     public void add(String name, UUID uuid) {
@@ -61,7 +67,7 @@ public class UserCache {
         }
         userCacheFile = gson.fromJson(configFile, UserCacheFile[].class);
         for (UserCacheFile userCacheFile1 : userCacheFile) {
-            userCacheFileHashMap.put(userCacheFile1.getName(), userCacheFile1);
+            this.userCacheFileHashMap.put(userCacheFile1.getName(), userCacheFile1);
         }
     }
 

@@ -17,6 +17,7 @@ public class Whitelist {
     private aPlayer[] ps;
     @Inject
     private Logger logger;
+    private UserCache userCache;
     private Path path = Paths.get("./plugins/fsp-whitelist/");
     private Path filePath = Paths.get("./plugins/fsp-whitelist/whitelist.json");
 
@@ -33,6 +34,10 @@ public class Whitelist {
         loadFile();
     }
 
+    public UserCache getUserCache() {
+        return userCache;
+    }
+
     public String listWhitelist() {
         String str = "";
         int i = 0;
@@ -46,19 +51,6 @@ public class Whitelist {
         return str;
     }
 
-    public boolean playerInsideWhitelist(aPlayer player) {
-        for (aPlayer p : ps) {
-            if (p.playerInside(player.getUuid())) return true;
-        }
-        return false;
-    }
-    public boolean playerInsideWhitelist(String player) {
-        for (aPlayer p : ps) {
-            if (p.playerInside(player)) return true;
-        }
-        return false;
-    }
-
     public boolean playerInsideWhitelist(UUID uuid) {
         for (aPlayer p : ps) {
             if (p.playerInside(uuid)) return true;
@@ -66,28 +58,21 @@ public class Whitelist {
         return false;
     }
 
-    public void add(aPlayer player) {
+    // 在线
+    public void add(Profile profile) {
+        aPlayer player = profile.getAplayer();
         int len = ps.length;
         ps = Arrays.copyOf(ps, len + 1);
         ps[len] = player;
         saveFile();
     }
 
-    public void add(String playerName) {
-        aPlayer player = new aPlayer();
-        player.main(playerName, UuidAPI.getOfflineUUID(playerName));
-        int len = ps.length;
-        ps = Arrays.copyOf(ps, len + 1);
-        ps[len] = player;
-        saveFile();
-    }
-
-    public void remove(UUID uuid) {
+    public void remove(Profile profile) {
         int i = 0;
         int index = 0;
         aPlayer[] temp = new aPlayer[ps.length - 1];
         for (aPlayer p : ps) {
-            if (p.playerInside(uuid)) {
+            if (p.playerInside(profile.getUuid())) {
                 index = 1;
             }
             if (i < temp.length) {
