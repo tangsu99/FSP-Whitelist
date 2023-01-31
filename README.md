@@ -3,6 +3,10 @@
 * 适用于正版服务器的白名单插件
 * 权限 `fwhitelist.admin`
 
+## 重构进行中
+### 这并不是一个完美的插件，内部有着很多糟糕的实现
+### 源代码现不能构建出一个可以正常使用的插件
+
 * 指令
 ```
 /fwhitelist on/off          开关白名单
@@ -22,3 +26,10 @@
   }
 ]
 ```
+
+#### 像素仙缘 FSP-Fantasy story in pixel world
+* 是一个 Minecraft Java 版的服务器
+* 公益
+* 正版验证
+* 入服需审核
+* [点我](https://space.bilibili.com/661916647)
