@@ -2,6 +2,7 @@ package cn.fsp.fspwhitelist;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,30 +16,22 @@ import java.util.UUID;
 public class UserCache {
     private UserCacheFile userCacheFile[];
     private HashMap<String, UserCacheFile> userCacheFileHashMap;
-    private Path path = Paths.get("./plugins/fsp-whitelist/");
-    private Path filePath = Paths.get("./plugins/fsp-whitelist/usercache.json");
-
-    private Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
+    private final Path path = Paths.get("./plugins/fsp-whitelist/");
+    private final Path filePath = Paths.get("./plugins/fsp-whitelist/usercache.json");
+    private final Logger logger;
+    private final Gson gson = new GsonBuilder()
             .create();
 
-    public UserCache() {
-        try {
-            Files.createDirectory(path);
-        } catch (IOException e) {
-        }
-        try {
-            Files.createFile(filePath);
-            Files.write(filePath, "[]".getBytes(StandardCharsets.UTF_8));
-        } catch (IOException e) {
-        }
+    public UserCache(Logger logger) {
+        this.logger = logger;
+        createFile();
         loadFile();
     }
     public aPlayer getPlayerCache(String name) {
         return new aPlayer(name, this.userCacheFileHashMap.get(name).getUuid());
     }
 
-    public boolean playerInsideWhitelist(String player) {
+    public boolean playerInsideUserCache(String player) {
         if (this.userCacheFileHashMap.containsKey(player)) {
             return true;
         }
@@ -54,28 +47,48 @@ public class UserCache {
         saveFile();
     }
 
+    private void setUserCacheFileHashMap() {
+        userCacheFileHashMap = new HashMap<>();
+        for (UserCacheFile userCacheFile1 : userCacheFile) {
+            userCacheFileHashMap.put(userCacheFile1.getName(), userCacheFile1);
+        }
+    }
+
     public void reLoadUserCache(){
         loadFile();
+        logger.info("User Cache reload done!");
     }
 
     private void loadFile() {
-        String configFile;
+        createFile();
+        String cacheFile;
         try {
-            configFile = Files.readString(filePath);
+            cacheFile = Files.readString(filePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        userCacheFile = gson.fromJson(configFile, UserCacheFile[].class);
-        for (UserCacheFile userCacheFile1 : userCacheFile) {
-            this.userCacheFileHashMap.put(userCacheFile1.getName(), userCacheFile1);
-        }
+        userCacheFile = gson.fromJson(cacheFile, UserCacheFile[].class);
+        setUserCacheFileHashMap();
     }
 
     private void saveFile() {
+        createFile();
         try {
             Files.write(filePath, gson.toJson(userCacheFile).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void createFile() {
+        try {
+            Files.createDirectory(path);
+        } catch (IOException e) {
+        }
+        try {
+            Files.createFile(filePath);
+            Files.write(filePath, "[]".getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
         }
     }
 }
