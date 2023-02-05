@@ -8,28 +8,22 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.slf4j.Logger;
 
 public class Config {
-    private config cfg;
+    private ConfigStorage cfg;
     private Path path = Paths.get("./plugins/fsp-whitelist/");
     private Path filePath = Paths.get("./plugins/fsp-whitelist/config.json");
-
+    private Logger logger;
     private Gson gson = new GsonBuilder()
             .setPrettyPrinting()
             .create();
 
-    public Config() {
-        try {
-            Files.createDirectory(path);
-        } catch (IOException e) {
-        }
-        try {
-            Files.createFile(filePath);
-            config conf = new config();
-            Files.write(filePath, gson.toJson(conf).getBytes(StandardCharsets.UTF_8));
-        } catch (IOException e) {
-        }
+    public Config(Logger logger) {
+        this.logger = logger;
+        createFile();
         loadFile();
+        logger.info("Load config done.");
     }
 
     public boolean getEnable() {
@@ -48,16 +42,18 @@ public class Config {
         loadFile();
     }
     private void loadFile() {
+        createFile();
         String configFile;
         try {
             configFile = Files.readString(filePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        cfg = gson.fromJson(configFile, config.class);
+        cfg = gson.fromJson(configFile, ConfigStorage.class);
     }
 
     private void saveFile() {
+        createFile();
         try {
             Files.write(filePath, gson.toJson(cfg).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
@@ -65,20 +61,16 @@ public class Config {
         }
     }
 
-    private class config {
-        private boolean enable = true;
-        private String kickMsg = "You are not on whitelist!";
-
-        public boolean getEnable() {
-            return enable;
+    private void createFile() {
+        try {
+            Files.createDirectory(path);
+        } catch (IOException e) {
         }
-
-        public void setEnable(boolean enable) {
-            this.enable = enable;
-        }
-
-        public String getKickMsg() {
-            return kickMsg;
+        try {
+            Files.createFile(filePath);
+            ConfigStorage conf = new ConfigStorage();
+            Files.write(filePath, gson.toJson(conf).getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
         }
     }
 }
