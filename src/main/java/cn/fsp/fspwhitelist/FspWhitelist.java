@@ -9,6 +9,7 @@ import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
@@ -37,42 +38,39 @@ public class FspWhitelist {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        logger.info("FSP-whitelist v" + BuildConstants.VERSION);
-        logger.info("by tangsu99");
-        logger.info("https://github.com/tangsu99/FSP-Whitelist");
-        config = new Config();
-        logger.info("Load config done.");
-//        if (!server.getConfiguration().isOnlineMode()) {
-//            logger.error("velocity 为离线模式");
-//            config.reviseEnable(false);
-//            logger.error("插件加载失败");
-//            return;
-//        }
-        if (server.getConfiguration().isOnlineMode()) {
-            logger.info("velocity 为在线模式");
-        }else {
-            logger.info("velocity 为离线模式");
-        }
+        init();
+    }
+
+    @Subscribe
+    public void onProxyReload(ProxyReloadEvent event) {
+        reload();
+    }
+
+    public void init() {
+        show();
+        config = new Config(logger);
         whitelist = new Whitelist(logger);
-        logger.info("Load whitelist done.");
         userCache = whitelist.getUserCache();
         commandManager.register(injector.getInstance(CmdBuilder.class).register(this));
-        logger.info("插件加载成功");
-        if (config.getEnable()) {
-            logger.info("白名单已启用");
-            return;
-        }
-        logger.info("白名单已禁用");
+        logger.info("done!");
+        configEnable();
+    }
+
+    public void reload() {
+        config = new Config(logger);
+        whitelist = new Whitelist(logger);
+        userCache = whitelist.getUserCache();
+        commandManager.register(injector.getInstance(CmdBuilder.class).register(this));
+        logger.info("Plugin reload done!");
     }
 
     @Subscribe
     public void onPreLoginEvent(PreLoginEvent event) {
-        logger.info("PreLoginEvent +> " + event.getUsername());
         if (!config.getEnable()) {
             return;
         }
         // 判断有无玩家的数据缓存
-        if (userCache.playerInsideWhitelist(event.getUsername())) {
+        if (userCache.playerInsideUserCache(event.getUsername())) {
             // 不在白名单
             if (!whitelist.playerInsideWhitelist(userCache.getPlayerCache(event.getUsername()).getUuid())) {
                 logger.info("非白名单玩家 " + event.getUsername() + " 尝试加入");
@@ -83,8 +81,7 @@ public class FspWhitelist {
 
     @Subscribe
     public void onGameProfileRequestEvent(GameProfileRequestEvent event) {
-        logger.info("GameProfileRequestEvent +> " + event.getUsername());
-        if (userCache.playerInsideWhitelist(event.getUsername())) {
+        if (userCache.playerInsideUserCache(event.getUsername())) {
             return;
         }
         // 写入玩家缓存
@@ -93,7 +90,6 @@ public class FspWhitelist {
 
     @Subscribe
     public void onLoginEvent(LoginEvent event) {
-        logger.info("LoginEvent > " + event.getPlayer().getUsername());
         if (!config.getEnable()) {
             return;
         }
@@ -106,18 +102,19 @@ public class FspWhitelist {
 
     @Subscribe
     public void onDisconnectEvent(DisconnectEvent event) {
-        logger.info("DisconnectEvent -> " + event.getPlayer().getUsername());
     }
 
-    // 大饼
-    // ping相关
-//    @Subscribe
-//    public void onProxyPingEvent(ProxyPingEvent event) {
-//        logger.info(event.toString());
-//        logger.info(event.getPing().toString());
-//        logger.info(event.getConnection().toString());
-//        logger.info(event.getConnection().getRemoteAddress().getAddress().toString());
-//        logger.info(event.getConnection().getRemoteAddress().getHostName());
-//        logger.info(String.valueOf(event.getConnection().getVirtualHost()));
-//    }
+    private void show() {
+        logger.info("FSP-whitelist v" + BuildConstants.VERSION);
+        logger.info("by tangsu99");
+        logger.info("https://github.com/tangsu99/FSP-Whitelist");
+    }
+
+    private void configEnable() {
+        if (config.getEnable()) {
+            logger.info("白名单已启用");
+        }else {
+            logger.info("白名单已禁用");
+        }
+    }
 }
