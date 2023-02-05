@@ -15,23 +15,20 @@ import org.slf4j.Logger;
 
 public class Whitelist {
     private aPlayer[] ps;
-    @Inject
     private Logger logger;
     private UserCache userCache;
     private Path path = Paths.get("./plugins/fsp-whitelist/");
     private Path filePath = Paths.get("./plugins/fsp-whitelist/whitelist.json");
+    private Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
 
     public Whitelist(Logger logger) {
         this.logger = logger;
-        try {
-            Files.createDirectory(path);
-        } catch (IOException e) {
-        }
-        try {
-            Files.createFile(filePath);
-        } catch (IOException e) {
-        }
+        createFile();
         loadFile();
+        userCache = new UserCache(logger);
+        logger.info("Load whitelist done.");
     }
 
     public UserCache getUserCache() {
@@ -65,6 +62,7 @@ public class Whitelist {
         ps = Arrays.copyOf(ps, len + 1);
         ps[len] = player;
         saveFile();
+        userCache.add(profile.getName(), profile.getUuid());
     }
 
     public void remove(Profile profile) {
@@ -99,34 +97,36 @@ public class Whitelist {
     }
     public void reLoadWhitelist(){
         loadFile();
+        userCache.reLoadUserCache();
     }
     private void loadFile() {
+        createFile();
         String whiteListFile;
-        Gson gson = new GsonBuilder()
-                .create();
         try {
             whiteListFile = Files.readString(filePath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (whiteListFile.equals("")){
-            try {
-                Files.write(filePath, "[]".getBytes(StandardCharsets.UTF_8));
-                whiteListFile = "[]";
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
         ps = gson.fromJson(whiteListFile, aPlayer[].class);
     }
     private void saveFile() {
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
+        createFile();
         try {
             Files.write(filePath, gson.toJson(ps).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void createFile() {
+        try {
+            Files.createDirectory(path);
+        } catch (IOException e) {
+        }
+        try {
+            Files.createFile(filePath);
+            Files.write(filePath, "[]".getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
         }
     }
 }
