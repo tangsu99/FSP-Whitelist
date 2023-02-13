@@ -3,6 +3,8 @@ package cn.fsp.fspwhitelist;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.event.PostOrder;
+import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
@@ -64,7 +66,7 @@ public class FspWhitelist {
         logger.info("Plugin reload done!");
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.FIRST)
     public void onPreLoginEvent(PreLoginEvent event) {
         if (!config.getEnable()) {
             return;
@@ -79,7 +81,7 @@ public class FspWhitelist {
         }
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.FIRST)
     public void onGameProfileRequestEvent(GameProfileRequestEvent event) {
         if (userCache.playerInsideUserCache(event.getUsername())) {
             return;
@@ -88,7 +90,7 @@ public class FspWhitelist {
         userCache.add(event.getGameProfile().getName(), event.getGameProfile().getId());
     }
 
-    @Subscribe
+    @Subscribe(order = PostOrder.FIRST)
     public void onLoginEvent(LoginEvent event) {
         if (!config.getEnable()) {
             return;
@@ -96,7 +98,8 @@ public class FspWhitelist {
         // 不在白名单
         if (!whitelist.playerInsideWhitelist(userCache.getPlayerCache(event.getPlayer().getUsername()).getUuid())) {
             logger.info("非白名单玩家 " + event.getPlayer().getUsername() + " 尝试加入");
-            event.getPlayer().disconnect(Component.text(config.getKickMsg()).color(NamedTextColor.RED));
+            event.setResult(ResultedEvent.ComponentResult.denied(Component.text(config.getKickMsg()).color(NamedTextColor.RED)));
+//            event.getPlayer().disconnect(Component.text(config.getKickMsg()).color(NamedTextColor.RED));
         }
     }
 
