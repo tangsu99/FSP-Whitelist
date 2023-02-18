@@ -1,6 +1,6 @@
 package cn.fsp.fspwhitelist;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.inject.Inject;
 import org.slf4j.Logger;
 
 public class Whitelist {
