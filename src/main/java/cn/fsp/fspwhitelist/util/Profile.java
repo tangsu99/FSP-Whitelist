@@ -1,14 +1,16 @@
-package cn.fsp.fspwhitelist;
+package cn.fsp.fspwhitelist.util;
 
 import java.util.UUID;
 
-public class aPlayer {
+public class Profile {
     private UUID uuid;
     private String name;
+    private boolean online;
 
-    public aPlayer(String name, UUID uuid) {
+    public Profile(String name, UUID uuid, boolean online) {
         this.uuid = uuid;
         this.name = name;
+        this.online = online;
     }
 
     public String getName() {
@@ -17,6 +19,10 @@ public class aPlayer {
 
     public UUID getUuid() {
         return this.uuid;
+    }
+
+    public boolean isOnline() {
+        return this.online;
     }
 
     public boolean playerInside(String player) {

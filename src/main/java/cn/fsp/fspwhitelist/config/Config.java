@@ -1,6 +1,5 @@
 package cn.fsp.fspwhitelist.config;
 
-import cn.fsp.fspwhitelist.ConfigStorage;
 import com.google.gson.*;
 import org.slf4j.Logger;
 
@@ -18,11 +17,12 @@ public class Config {
     private Path filePath = Paths.get("./plugins/fsp-whitelist/config.json");
     private Logger logger;
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private boolean enable;
-    private String kickMsg;
+    private boolean enable = true;
+    private String kickMsg = "你不在白名单中！";
 
     public Config(Logger logger) {
         this.logger = logger;
+        newConfigEntry();
         loadFile();
     }
 
@@ -44,7 +44,7 @@ public class Config {
 
     private void loadFile() {
         createFile();
-        try (BufferedReader reader = Files.newBufferedReader(path)) {
+        try (BufferedReader reader = Files.newBufferedReader(filePath)) {
             cfg = gson.fromJson(reader, JsonObject.class);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -71,8 +71,7 @@ public class Config {
         }
         try {
             Files.createFile(filePath);
-            cn.fsp.fspwhitelist.ConfigStorage conf = new ConfigStorage();
-            Files.write(filePath, gson.toJson(conf).getBytes(StandardCharsets.UTF_8));
+            Files.write(filePath, gson.toJson(cfg).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
         }
     }

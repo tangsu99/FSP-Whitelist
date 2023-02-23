@@ -1,7 +1,9 @@
-package cn.fsp.fspwhitelist;
+package cn.fsp.fspwhitelist.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.velocitypowered.api.util.UuidUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -26,16 +28,13 @@ public class ProfileAPI {
             throw new RuntimeException(e);
         }
         if (response.statusCode() == 200) {
-            Gson gson = new GsonBuilder()
-                    .create();
-            Profile profile = new Profile(gson.fromJson(response.body(), bPlayer.class), true);
+            Gson gson = new GsonBuilder().create();
+            JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
+            String name = jsonObject.get("name").getAsString();
+            UUID uuid = UuidUtils.fromUndashed(jsonObject.get("uuid").getAsString());
+            Profile profile = new Profile(name, uuid, true);
             return profile;
         }
-        Profile profile = new Profile(playerName, UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8)), false);
-        return profile;
-    }
-
-    public static Profile getOfflineProfile(String playerName) {
         Profile profile = new Profile(playerName, UUID.nameUUIDFromBytes(("OfflinePlayer:" + playerName).getBytes(StandardCharsets.UTF_8)), false);
         return profile;
     }

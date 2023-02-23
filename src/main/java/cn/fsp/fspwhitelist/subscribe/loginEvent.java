@@ -1,23 +1,20 @@
 package cn.fsp.fspwhitelist.subscribe;
 
 import cn.fsp.fspwhitelist.usercache.UserCache;
-import cn.fsp.fspwhitelist.aFspWhitelist;
+import cn.fsp.fspwhitelist.FspWhitelist;
 import cn.fsp.fspwhitelist.whitelist.WhiteList;
 import com.velocitypowered.api.event.PostOrder;
-import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 
 public class loginEvent {
     private ProxyServer server;
     private UserCache userCache;
     private WhiteList whiteList;
-    public loginEvent(aFspWhitelist plugin){
+    public loginEvent(FspWhitelist plugin){
         this.server = plugin.server;
         this.userCache = plugin.userCache;
         this.whiteList = plugin.whitelist;

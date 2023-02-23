@@ -1,5 +1,6 @@
-package cn.fsp.fspwhitelist;
+package cn.fsp.fspwhitelist.command;
 
+import cn.fsp.fspwhitelist.FspWhitelist;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;

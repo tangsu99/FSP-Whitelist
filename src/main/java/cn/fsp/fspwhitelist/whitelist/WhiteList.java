@@ -1,9 +1,8 @@
 package cn.fsp.fspwhitelist.whitelist;
 
+import cn.fsp.fspwhitelist.util.Profile;
+import cn.fsp.fspwhitelist.usercache.UserCache;
 import cn.fsp.fspwhitelist.FspWhitelist;
-import cn.fsp.fspwhitelist.Profile;
-import cn.fsp.fspwhitelist.UserCache;
-import cn.fsp.fspwhitelist.aFspWhitelist;
 import com.google.gson.*;
 import org.slf4j.Logger;
 
@@ -21,14 +20,15 @@ import java.util.UUID;
 public class WhiteList {
     public final Map<UUID, String> byUuid = new HashMap<>();
 
-    private final Gson gson1 = new GsonBuilder().setPrettyPrinting().create();
-    private final Path path = Paths.get("./whitelist.json");
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Path filePath = Paths.get("./plugins/fsp-whitelist/whitelist.json");
+    private final Path path = Paths.get("./plugins/fsp-whitelist/");
     private JsonArray whiteListArray;
     private Logger logger;
     private UserCache userCache;
     private final Map<UUID, Integer> index = new HashMap<>();
 
-    public WhiteList(aFspWhitelist plugin) {
+    public WhiteList(FspWhitelist plugin) {
         load();
     }
 
@@ -48,8 +48,8 @@ public class WhiteList {
 
     public void load() {
         createFile();
-        try (BufferedReader reader = Files.newBufferedReader(path)) {
-            this.whiteListArray = gson1.fromJson(reader, JsonArray.class);
+        try (BufferedReader reader = Files.newBufferedReader(filePath)) {
+            this.whiteListArray = gson.fromJson(reader, JsonArray.class);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -70,7 +70,7 @@ public class WhiteList {
 
     public void save() {
         try {
-            Files.write(path, gson1.toJson(whiteListArray).getBytes(StandardCharsets.UTF_8));
+            Files.write(filePath, gson.toJson(whiteListArray).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -84,14 +84,18 @@ public class WhiteList {
         return jsonObject;
     }
 
-    private void createFile() {
+    private void createPath() {
         try {
-            Files.createDirectory(path);
+            Files.createDirectory(filePath);
         } catch (IOException e) {
         }
+    }
+
+    private void createFile() {
+        createPath();
         try {
-            Files.createFile(path);
-            Files.write(path, "[]".getBytes(StandardCharsets.UTF_8));
+            Files.createFile(filePath);
+            Files.write(filePath, "[]".getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
         }
     }
