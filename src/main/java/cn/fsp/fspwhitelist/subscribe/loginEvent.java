@@ -2,6 +2,7 @@ package cn.fsp.fspwhitelist.subscribe;
 
 import cn.fsp.fspwhitelist.usercache.UserCache;
 import cn.fsp.fspwhitelist.FspWhitelist;
+import cn.fsp.fspwhitelist.util.Profile;
 import cn.fsp.fspwhitelist.whitelist.WhiteList;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
@@ -9,6 +10,7 @@ import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.GameProfileRequestEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.util.GameProfile;
 
 public class loginEvent {
     private ProxyServer server;
@@ -33,6 +35,10 @@ public class loginEvent {
 
     @Subscribe(order = PostOrder.FIRST)
     public void onGameProfileRequestEvent(GameProfileRequestEvent event) {
+        if (userCache.getUserCache(event.getGameProfile().getId()) == null) {
+            GameProfile gameProfile = event.getGameProfile();
+            userCache.add(new Profile(gameProfile.getName(), gameProfile.getId(), true));
+        }
 //        if (userCache.playerInsideUserCache(event.getUsername())) {
 //            return;
 //        }
@@ -42,6 +48,7 @@ public class loginEvent {
 
     @Subscribe(order = PostOrder.FIRST)
     public void onLoginEvent(LoginEvent event) {
+        userCache.getUserCache(event.getPlayer().getUsername());
         // 不在白名单
 //        if (!whitelist.playerInsideWhitelist(userCache.getPlayerCache(event.getPlayer().getUsername()).getUuid())) {
 //            logger.info("非白名单玩家 " + event.getPlayer().getUsername() + " 尝试加入");

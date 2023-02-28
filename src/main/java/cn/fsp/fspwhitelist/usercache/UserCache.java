@@ -19,8 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class UserCache {
-    public final Map<UUID, UserCacheEntry> byUuid = new HashMap<>();
-
+    private final Map<UUID, UserCacheEntry> byUuid = new HashMap<>();
+    private final Map<String, UserCacheEntry> byName = new HashMap<>();
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private final Path filePath = Paths.get("./plugins/fsp-whitelist/usercache.json");
     private final Path path = Paths.get("./plugins/fsp-whitelist/");
@@ -40,6 +40,9 @@ public class UserCache {
 
     public UserCacheEntry getUserCache(UUID uuid) {
         return byUuid.get(uuid);
+    }
+    public UserCacheEntry getUserCache(String name) {
+        return byName.get(name);
     }
 
     public void load() {
@@ -80,6 +83,7 @@ public class UserCache {
                 expiresOn = getExpiresOn();
             }
             byUuid.put(uuid, new UserCacheEntry(name, uuid, expiresOn));
+            byName.put(name, new UserCacheEntry(name, uuid, expiresOn));
         }
         save();
     }

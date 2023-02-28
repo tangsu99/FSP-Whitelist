@@ -29,11 +29,9 @@ public class WhiteList {
     private final Map<UUID, Integer> index = new HashMap<>();
 
     public WhiteList(FspWhitelist plugin) {
+        this.logger = plugin.logger;
+        this.userCache = plugin.userCache;
         load();
-    }
-
-    public boolean isAllowed(Profile profile) {
-        return byUuid.containsKey(profile.getUuid());
     }
 
     public void add(Profile profile) {
@@ -44,6 +42,13 @@ public class WhiteList {
     public void remove(Profile profile) {
         whiteListArray.remove(index.get(profile.getUuid()));
         save();
+    }
+
+    public boolean isAllow(String name) {
+        if (!byUuid.containsKey(userCache.getUserCache(name).getUuid())) {
+            return false;
+        }
+        return true;
     }
 
     public void load() {
